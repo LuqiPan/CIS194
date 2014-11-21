@@ -60,3 +60,12 @@ hanoi 0 _ _ _ = []
 hanoi 1 from to _ = [(from, to)]
 hanoi n from to temp =
   (hanoi (n-1) from temp to) ++ [(from, to)] ++ (hanoi (n-1) temp to from)
+
+hanoi4 :: Integer -> Peg -> Peg -> Peg -> Peg -> [Move]
+hanoi4 0 _ _ _ _ = []
+hanoi4 1 from to _ _ = [(from, to)]
+hanoi4 2 from to temp1 _ = hanoi 2 from to temp1
+hanoi4 n from to temp1 temp2 =
+  hanoi4 (div n 2) from temp1 to temp2 ++
+  hanoi (n - (div n 2)) from to temp2 ++
+  hanoi4 (div n 2) temp1 to from temp2
