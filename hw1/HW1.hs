@@ -15,3 +15,39 @@ isThisWorking = "Yes"
 -- `isThisWorking` at the prompt. GHCi will tell you whether it's working!
 
 -- Put your work below.
+
+lastDigit :: Integer -> Integer
+lastDigit n =
+  mod n 10
+
+dropLastDigit :: Integer -> Integer
+dropLastDigit n =
+  div n 10
+
+toDigits :: Integer -> [Integer]
+toDigits n
+  | n <= 0 = []
+  | otherwise = (toDigits (dropLastDigit n)) ++ [(lastDigit n)]
+
+doubleEveryOtherHelper :: [Integer] -> [Integer]
+doubleEveryOtherHelper [] = []
+doubleEveryOtherHelper (x:[]) = x:[]
+doubleEveryOtherHelper (x:y:zs) = x:(2*y):(doubleEveryOtherHelper zs)
+
+doubleEveryOther :: [Integer] -> [Integer]
+doubleEveryOther xs =
+  reverse (doubleEveryOtherHelper (reverse xs))
+
+numberSum :: Integer -> Integer
+numberSum n
+  | (0 <= n) && (n < 10) = n
+  | (9 < n) && (n < 19) = (mod n 10) + 1
+  | otherwise = -65536
+
+sumDigits :: [Integer] -> Integer
+sumDigits xs =
+  sum (map numberSum xs)
+
+validate :: Integer -> Bool
+validate cardNumber =
+  mod (sumDigits (doubleEveryOther (toDigits cardNumber))) 10 == 0
