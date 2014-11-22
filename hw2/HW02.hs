@@ -107,3 +107,19 @@ scrabbleValueTemplate stemp word =
   else if (elem '3' stemp) then 3 * totalValue
   else totalValue
   where totalValue = sum (map scrabbleCharValue (zip stemp word))
+
+wordMatchTemplate8 :: Template -> String -> Bool
+wordMatchTemplate8 [] [] = True
+wordMatchTemplate8 [] _ = False
+wordMatchTemplate8 _ [] = True
+wordMatchTemplate8 (a:bs) (x:ys) =
+  if a == x then (wordMatchTemplate8 bs ys)
+  else
+    if a == '?' then (wordMatchTemplate8 bs ys)
+    else False
+
+wordFitsTemplate8 :: Template -> Hand -> String -> Bool
+wordFitsTemplate8 temp hand word =
+  if (wordMatchTemplate8 temp word) then
+    (formableBy word hand)
+  else False
