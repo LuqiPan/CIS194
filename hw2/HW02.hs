@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wall #-}
+
 {-
 Name: <your name here>
 Collaborators: <your collaborators here, or "none">
@@ -34,7 +36,57 @@ type STemplate = Template
 
 -- Write your code below:
 formableBy :: String -> Hand -> Bool
-formableBy = undefined
+formableBy [] _ = True
+formableBy (x:ys) hand =
+  if (elem x hand) then formableBy ys (delete x hand)
+  else False
+
+wordsFromHelper :: Hand -> [String] -> [String] -> [String]
+wordsFromHelper _ acc [] = acc
+wordsFromHelper hand acc (x:ys) =
+  if (formableBy x hand) then (wordsFromHelper hand (x:acc) ys)
+  else (wordsFromHelper hand acc ys)
 
 wordsFrom :: Hand -> [String]
-wordsFrom hand = filter (`formableBy` hand) allWords
+{-wordsFrom hand = filter (`formableBy` hand) allWords-}
+wordsFrom hand = wordsFromHelper hand [] allWords
+
+wordMatchTemplate :: Template -> String -> Bool
+wordMatchTemplate [] [] = True
+wordMatchTemplate [] _ = False
+wordMatchTemplate _ [] = False
+wordMatchTemplate (a:bs) (x:ys) =
+  if a == x then (wordMatchTemplate bs ys)
+  else
+    if a == '?' then (wordMatchTemplate bs ys)
+    else False
+
+wordNeedMatchHelper :: Template -> String -> String -> String
+wordNeedMatchHelper [] [] acc = acc
+wordNeedMatchHelper [] _ _ = ""
+wordNeedMatchHelper _ [] _ = ""
+wordNeedMatchHelper (a:bs) (x:ys) acc =
+  if (a == '?') then (wordNeedMatchHelper bs ys (x:acc))
+  else (wordNeedMatchHelper bs ys acc)
+
+wordNeedMatch :: Template -> String -> String
+wordNeedMatch temp word = wordNeedMatchHelper temp word ""
+
+wordFitsTemplate :: Template -> Hand -> String -> Bool
+wordFitsTemplate temp hand word =
+  if (wordMatchTemplate temp word) then
+    (formableBy (wordNeedMatch temp word) hand)
+  else False
+
+wordsFittingTemplate :: Template -> Hand -> [String]
+wordsFittingTemplate temp hand =
+  filter (wordFitsTemplate temp hand) allWords
+
+scrabbleValueWord :: String -> Int
+scrabbleValueWord word = sum (map scrabbleValue word)
+
+bestWords :: [String] -> [String]
+bestWords [] = []
+bestWords wordLst =
+  filter (\x -> (scrabbleValueWord x) == maxValue) wordLst
+    where maxValue = maximum (map scrabbleValueWord wordLst)
