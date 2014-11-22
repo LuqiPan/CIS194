@@ -90,3 +90,20 @@ bestWords [] = []
 bestWords wordLst =
   filter (\x -> (scrabbleValueWord x) == maxValue) wordLst
     where maxValue = maximum (map scrabbleValueWord wordLst)
+
+scrabbleCharValue :: (Char, Char) -> Int
+scrabbleCharValue (stemp, c) =
+  case stemp of
+    'D' -> 2 * (scrabbleValue c)
+    'T' -> 3 * (scrabbleValue c)
+    _ -> scrabbleValue c
+
+scrabbleValueTemplate :: STemplate -> String -> Int
+scrabbleValueTemplate [] [] = 0
+scrabbleValueTemplate [] _ = undefined
+scrabbleValueTemplate _ [] = undefined
+scrabbleValueTemplate stemp word =
+  if (elem '2' stemp) then 2 * totalValue
+  else if (elem '3' stemp) then 3 * totalValue
+  else totalValue
+  where totalValue = sum (map scrabbleCharValue (zip stemp word))
