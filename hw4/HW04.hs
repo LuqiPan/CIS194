@@ -79,14 +79,13 @@ safeTail [] = Nothing
 safeTail (_:xs) = Just xs
 
 allCaps :: [String] -> Bool
-allCaps xs =
-  all (isJust . safeHead) xs && all isUpper (catMaybes (map safeHead xs))
+allCaps xs = all (isJust . safeHead) xs && all isUpper (mapMaybe safeHead xs)
 
 dropTrailingWhitespace :: String -> String
-dropTrailingWhitespace str = dropWhileEnd isSpace str
+dropTrailingWhitespace = dropWhileEnd isSpace
 
 firstLetters :: [String] -> [Char]
-firstLetters strs = catMaybes (map safeHead strs)
+firstLetters = mapMaybe safeHead
 
 asList :: [String] -> String
-asList strs = "[" ++ (intercalate "," strs) ++ "]"
+asList strs = "[" ++ intercalate "," strs ++ "]"
