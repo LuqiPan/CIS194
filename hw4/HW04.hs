@@ -1,6 +1,10 @@
 {-# OPTIONS_GHC -Wall #-}
 
 module HW04 where
+import BST
+import Data.Char
+import Data.Maybe
+import Data.List
 
 {-Only 1 implementation-}
 ex1 :: a -> b -> b
@@ -52,8 +56,37 @@ ex10 Nothing = error "impossible"
 
 {-2 implementations-}
 ex11 :: a -> Maybe a
-ex11 a = Just a
+ex11 = Just
 
 {-2 implementations-}
 ex12 :: Maybe a -> Maybe a
 ex12 ma = ma
+
+insertBST :: (a -> a -> Ordering) -> a -> BST a -> BST a
+insertBST _ a Leaf = Node Leaf a Leaf
+insertBST cmp key r@(Node left value right) =
+  case cmp key value of
+    LT -> Node (insertBST cmp key left) value right
+    EQ -> r
+    GT -> Node left value (insertBST cmp key right)
+
+safeHead :: [a] -> Maybe a
+safeHead [] = Nothing
+safeHead (x:_) = Just x
+
+safeTail :: [a] -> Maybe [a]
+safeTail [] = Nothing
+safeTail (_:xs) = Just xs
+
+allCaps :: [String] -> Bool
+allCaps xs =
+  all (isJust . safeHead) xs && all isUpper (catMaybes (map safeHead xs))
+
+dropTrailingWhitespace :: String -> String
+dropTrailingWhitespace str = dropWhileEnd isSpace str
+
+firstLetters :: [String] -> [Char]
+firstLetters strs = catMaybes (map safeHead strs)
+
+asList :: [String] -> String
+asList strs = "[" ++ (intercalate "," strs) ++ "]"
